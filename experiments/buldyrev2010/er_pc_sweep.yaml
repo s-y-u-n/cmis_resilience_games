@@ -1,0 +1,7 @@
+scenario_config: "configs/buldyrev2010/er_default.yaml"
+experiment_name: "buldyrev2010_er_pc_sweep"
+sweep:
+  param: "percolation.survival_prob"
+  values: [0.6, 0.7, 0.8, 0.9]
+output_tag: "er_pc_sweep"
+

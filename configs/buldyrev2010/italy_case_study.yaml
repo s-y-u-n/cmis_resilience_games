@@ -1,0 +1,17 @@
+scenario_name: "buldyrev2010_italy_case"
+game_type: "protection"
+network:
+  type: "real_italy"
+  path_power: "data/raw/italy_power.csv"
+  path_comm: "data/raw/italy_comm.csv"
+  path_dep: "data/raw/italy_dependencies.csv"
+percolation:
+  survival_prob: 0.8
+  random_seed: 321
+value_function:
+  num_scenarios: 100
+  performance_metric: "mcgc_size"
+shapley:
+  num_samples: 500
+  random_seed: 2001
+

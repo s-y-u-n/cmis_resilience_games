@@ -1,12 +1,12 @@
 """
 cmis_senario_games
-===================
+==================
 
-仮想ライフラインネットワークに対するレジリエンス協力ゲームの
-コアエンジンを提供する Python パッケージ。
-
-主なサブモジュール:
-- core: ネットワーク・ハザード・シミュレーションのドメインモデルと計算
-- coop: Shapley 値や相互作用指標など協力ゲーム論ユーティリティ
+Core engine and scenario implementations for resilience cooperation games
+on (interdependent) lifeline networks.
 """
+
+from .core.value_functions import GameType
+
+__all__ = ["GameType"]
 

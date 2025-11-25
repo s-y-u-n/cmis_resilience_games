@@ -1,14 +1,32 @@
 cmis_senario_games
-===================
+==================
 
-協力ゲーム論に基づき、仮想ライフラインネットワークのレジリエンス向上策
-（ノード補強）の貢献度評価を行うための研究用プロトタイプです。
+Resilience cooperation game engine for virtual lifeline / interdependent networks.
 
-- 仮想ライフラインネットワークのハザード下でのシステム失敗確率
-- 提携 S に対する特性関数 v(S)
-- Shapley 値やシナジー指標の計算
+現在の基本設計は Buldyrev et al. (2010) の相互依存ネットワーク・パーコレーションモデルを
+「防護型ゲーム（Protection Game）」として実装するパターンを軸に構成している。
 
-を Python 実装として提供することを目標とします。
+詳しい設計方針・モジュール構成は次を参照:
 
-詳細な設計は `docs/` 以下を参照してください。
+- `docs/design_cmis_senario_games.md`
+- `docs/scenario_buldyrev2010.md`
+- `docs/scenarios_overview.md`
+
+## インストールと開発
+
+```bash
+poetry install
+```
+
+## 実験ランナー（雛形）
+
+Buldyrev2010 パターンに基づく実験は、将来的に次のような形で実行する想定:
+
+```bash
+python -m cmis_senario_games.run_experiment \
+  --config experiments/buldyrev2010/node_importance_shapley.yaml
+```
+
+現時点では `core/experiment_runner.py` および `run_experiment` モジュールは
+プレースホルダ実装であり、今後の実装で有効化する。
 

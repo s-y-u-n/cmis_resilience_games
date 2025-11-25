@@ -1,0 +1,18 @@
+scenario_name: "buldyrev2010_sf_protection"
+game_type: "protection"
+network:
+  type: "sf"
+  num_nodes: 50000
+  lambda_: 3.0
+  k_min: 2
+  seed: 43
+percolation:
+  survival_prob: 0.8
+  random_seed: 124
+value_function:
+  num_scenarios: 100
+  performance_metric: "mcgc_size"
+shapley:
+  num_samples: 500
+  random_seed: 1001
+
