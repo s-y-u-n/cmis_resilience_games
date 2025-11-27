@@ -1,0 +1,306 @@
+Vol 464 | 15 April 2010 | doi:10.1038/nature08932
+
+
+
+
+                                                                                                                                 LETTERS
+Catastrophic cascade of failures in interdependent
+networks
+Sergey V. Buldyrev1,2, Roni Parshani3, Gerald Paul2, H. Eugene Stanley2 & Shlomo Havlin3
+
+
+Complex networks have been studied intensively for a decade, but                       dependencies between the networks, removal of only a small fraction
+research still focuses on the limited case of a single, non-interacting                of nodes can result in the complete fragmentation of the entire system.
+network1–14. Modern systems are coupled together15–19 and there-                          To model interdependent networks, we consider for simplicity,
+fore should be modelled as interdependent networks. A fun-                             and without loss of generality, two networks, A and B, with the same
+damental property of interdependent networks is that failure of                        number of nodes, N. The functioning of node Ai (i 5 1, 2, …, N), in
+nodes in one network may lead to failure of dependent nodes in                         network A, depends on the ability of node Bi , in network B, to supply
+other networks. This may happen recursively and can lead to a                          a critical resource, and vice versa. If node Ai stops functioning owing
+cascade of failures. In fact, a failure of a very small fraction of nodes              to attack or failure, node Bi stops functioning. Similarly, if node Bi
+in one network may lead to the complete fragmentation of a system                      stops functioning then node Ai stops functioning. We denote such a
+of several interdependent networks. A dramatic real-world                              dependence by a bidirectional link, Ai « Bi, that defines a one-to-one
+example of a cascade of failures (‘concurrent malfunction’) is the                     correspondence between nodes of network A and nodes of network
+electrical blackout that affected much of Italy on 28 September                        B. Within network A, the nodes are randomly connected by A-links
+2003: the shutdown of power stations directly led to the failure of                    with degree distribution PA(k), where the degree, k, of each node is
+nodes in the Internet communication network, which in turn                             defined as the number of A-links connected to that node in network
+caused further breakdown of power stations20. Here we develop a                        A. Analogously, within network B, the nodes are randomly connected
+framework for understanding the robustness of interacting                              by B-links with degree distribution PB(k) (Fig. 2).
+networks subject to such cascading failures. We present exact ana-                        We begin by randomly removing a fraction, 1 2 p, of the nodes of
+lytical solutions for the critical fraction of nodes that, on removal,                 network A and removing all the A-links connected to these removed
+will lead to a failure cascade and to a complete fragmentation of two                  nodes (Fig. 2a). Owing to the dependence between the networks, all
+interdependent networks. Surprisingly, a broader degree distri-                        the nodes in network B that are connected to the removed A-nodes by
+bution increases the vulnerability of interdependent networks to                       A « B links must also be removed (Fig. 2b). Any B-links connected
+random failure, which is opposite to how a single network behaves.                     to the removed B-nodes are then also removed. As nodes and links
+Our findings highlight the need to consider interdependent                             are sequentially removed, each network begins to fragment into con-
+network properties in designing robust networks.                                       nected components, which we call clusters. The clusters in network A
+   Today’s networks are becoming increasingly dependent on one                         and the clusters in network B are different because each network is
+another. Diverse infrastructures such as water supply, transportation,                 connected differently. A set of nodes, a, in network A and the cor-
+fuel and power stations are coupled together. We show that owing to                    responding set of nodes, b, in network B form a mutually connected
+this coupling, interdependent networks are extremely sensitive to                      set if (1) each pair of nodes in a is connected by a path that consists of
+random failure, such that a random removal of a small fraction of                      nodes belonging to a and links of network A, and (2) each pair of
+nodes from one network can produce an iterative cascade of failures                    nodes in b is connected by a path that consists of nodes belonging to b
+in several interdependent networks. Electrical blackouts frequently                    and links of network B. We call a mutually connected set a mutually
+result from a cascade of failures between interdependent networks,                     connected cluster if it cannot be enlarged by adding other nodes and
+and the problem has been dramatically exemplified by the several                       still satisfy the conditions above. Only mutually connected clusters
+large-scale blackouts that have occurred in recent years. In this Letter,              are potentially functional.
+we demonstrate a cascade of failures using real-world data from a                         To identify these mutually connected clusters, we first define the
+power network and an Internet network (a supervisory control and                       a1-clusters as the clusters of network A remaining after a fraction
+data acquisition system) that were implicated in the blackout that                     1 2 p of the A-nodes are removed as the result of an attack or mal-
+affected much of Italy on 28 September 200320. These two networks                      function (Fig. 2b). This state of the networks is the first stage in the
+feature a bidirectional dependence such that power stations depend                     cascade of failures. Next we define the b1-sets as the sets of B-nodes
+on communication nodes for control and communication nodes                             that are connected to a1-clusters by A « B links. According to the
+depend on power stations for their electricity supply.                                 definition of mutually connected clusters, all the B-links connecting
+   Figure 1 shows the two networks and the connections between                         different b1-sets must be removed. Because the two networks are
+them, based on the real geographical locations. The figure exemplifies                 connected differently, each b1-set may split into several clusters,
+a situation in which an initial failure of only one power station may                  which we define as b2-clusters (Fig. 2c). The b1-sets that do not split,
+lead to an iterative cascade of failures that causes both networks to                  and hence coincide with a1-clusters, are mutually connected. This
+become fragmented. For an isolated single network, a significant                       state of the networks is the second stage in the cascade of failures. In
+number of the network nodes must be randomly removed before                            the third stage, we determine all the a3-clusters (Fig. 2d), in a similar
+the network breaks down. However, when taking into account the                         way, and in the fourth stage we determine all the b4-clusters. We
+1
+Department of Physics, Yeshiva University, 500 West 185th Street, New York, New York 10033, USA. 2Center for Polymer Studies and Department of Physics, Boston University,
+Boston, Massachusetts 02215, USA. 3Minerva Center and Department of Physics, Bar-Ilan University, 52900 Ramat-Gan, Israel.
+
+                                                                                                                                                                    1025
+                                                  ©2010 Macmillan Publishers Limited. All rights reserved
+LETTERS                                                                                                                                NATURE | Vol 464 | 15 April 2010
+
+
+
+
+       a                                                     b                                                     c
+
+
+
+
+Figure 1 | Modelling a blackout in Italy. Illustration of an iterative process of   at the next step are marked in green. b, Additional nodes that were
+a cascade of failures using real-world data from a power network (located on        disconnected from the Internet communication network giant component
+the map of Italy) and an Internet network (shifted above the map) that were         are removed (red nodes above map). As a result the power stations
+implicated in an electrical blackout that occurred in Italy in September            depending on them are removed from the power network (red nodes on
+200320. The networks are drawn using the real geographical locations and            map). Again, the nodes that will be disconnected from the giant cluster at the
+every Internet server is connected to the geographically nearest power              next step are marked in green. c, Additional nodes that were disconnected
+station. a, One power station is removed (red node on map) from the power           from the giant component of the power network are removed (red nodes on
+network and as a result the Internet nodes depending on it are removed from         map) as well as the nodes in the Internet network that depend on them (red
+the Internet network (red nodes above the map). The nodes that will be              nodes above map).
+disconnected from the giant cluster (a cluster that spans the entire network)
+
+
+continue this process until no further splitting and link removal can               mutually connected cluster is of interest. The probability that two
+occur (Fig. 2d). We find that this process leads to a percolation phase             neighbouring A-nodes are connected by A « B links to two neigh-
+transition for the two interdependent networks at a critical threshold,             bouring B-nodes scales as 1/N (Supplementary Information). Hence,
+p 5 pc, which is significantly larger than the equivalent threshold for a           at the end of the cascade process of failures, above pc only very small
+single network. As in classical network theory21–25, we define the giant            mutually connected clusters and one giant mutually connected clus-
+mutually connected component to be the mutually connected cluster                   ter exist, in contrast to traditional percolation, wherein the cluster
+spanning the entire network. Below pc there is no giant mutually                    size distribution obeys a power law. When the giant component
+connected component, whereas above pc a giant mutually connected                    exists, the interdependent networks preserve their functionality; if
+cluster exists.                                                                     it does not exist, the networks split into small fragments that cannot
+    Our insight based on percolation theory is that when the network                function on their own.
+is fragmented, the nodes belonging to the giant component connect-                     We apply our model first to the case of two Erdo0 s–Rényi net-
+ing a finite fraction of the network are still functional, whereas the              works21–23 with average degrees ÆkAæ and ÆkBæ. We remove a random
+nodes that are part of the remaining small clusters become non-                     fraction, 1 2 p, of the nodes in network A and follow the iterative
+functional. Therefore, for interdependent networks only the giant                   process of forming a1-, b2-, a3-, …, b2k- and a2k11-clusters as
+
+
+                                 a                          b                           c                         d
+                                                                 a13                        a13             b24        a34              b24
+
+
+
+
+                                                                                                            b23        a33              b23
+
+
+                                                                 a12                        a12             b22        a32              b22
+
+
+                             Attack
+
+                                                                 a11                        a11             b21        a31              b21
+                                        A        B                     Stage 1                    Stage 2                    Stage 3
+
+Figure 2 | Modelling an iterative process of a cascade of failures. Each            b21, b22, b23 and b24. d, Stage 3: A-links that link sets of A-nodes connected to
+node in network A depends on one and only one node in network B, and vice           separate b2-clusters are eliminated and network A breaks into four a3-
+versa. Links between the networks are shown as horizontal straight lines, and       clusters, namely a31, a32, a33 and a34. These coincide with the clusters b21, b22,
+A-links and B-links are shown as arcs. a, One node from network A is                b23 and b24, and no further link elimination and network breaking occurs.
+removed (‘attack’). b, Stage 1: a dependent node in network B is also               Therefore, each connected b2-cluster/a3-cluster pair is a mutually connected
+eliminated and network A breaks into three a1-clusters, namely a11, a12 and         cluster and the clusters b24 and a34, which are the largest among them,
+a13. c, Stage 2: B-links that link sets of B-nodes connected to separate a1-        constitute the giant mutually connected component.
+clusters are eliminated and network B breaks into four b2-clusters, namely
+1026
+                                                     ©2010 Macmillan Publishers Limited. All rights reserved
+NATURE | Vol 464 | 15 April 2010                                                                                                                                LETTERS
+
+
+ a 1.0                                                                                             component exists for every non-zero value of p. However, for inter-
+                                                                                                   dependent scale-free networks, the giant component does not exist
+                     N = 1,000
+                                                                                                   below the critical value pc ? 0, even for 2 , l ( 3.
+                     N = 2,000
+     0.8                                                                                              In the case of a single network, pc is smaller for a broader degree
+                     N = 4,000
+                     N = 8,000                                                                     distribution. In sharp contrast, for interdependent networks a
+                     N = 16,000                                                                    broader degree distribution results in a larger value of pc because
+     0.6             N = 32,000
+                     N = 64,000
+                                                                                                   high-degree nodes of one network can depend on low-degree nodes
+                                                                                                   of the other. The hubs (defined as nodes of exceptionally large
+P∞
+
+
+
+
+                                                                                                   degree) that have a dominant role in the robustness of a single net-
+     0.4
+                                                                                                   work become vulnerable when a cascade of failures occurs in two
+                                                                                                   interdependent networks. Moreover, a broader distribution with the
+                                                                                                   same average degree implies that there are more low-degree nodes.
+     0.2
+                                                                       pc = 2.4554/〈k〉             Because the low-degree nodes are more easily disconnected, the
+                                                                                                   advantage of a broad distribution for a single network becomes a
+     0.0                                                                                           disadvantage for interdependent networks. In Fig. 3b, we demon-
+       2.36      2.38          2.4          2.42          2.44        2.46       2.48       2.5    strate this behaviour by comparing simulation results for several
+                                                   p〈k〉                                            scale-free networks with different l values, an Erdo0 s–Rényi network
+                                                                                                   and a random regular network, all with an average degree of Ækæ 5 4.
+ b 1.0                                                                                             The simulation results are in full agreement with our analytical
+                                                                                                   results and show that pc is indeed higher for a broader distribution.
+                                                                                                      Next we analytically solve our model of interconnected networks
+     0.8
+                                                                                                   using the mathematical technique of generating functions. We will
+                                                                              RR                   define generating functions for network A; similar equations describe
+     0.6                                                                      ER                   network B. As in refs 24–26, we will introduce
+                                                                                                                                        P          generating functions of
+                                                                              SF, λ = 3            the degree distributions, GA0(z) 5 kPA(k)zk. Analogously, we will
+P∞
+
+
+
+
+                                                                              SF, λ = 2.7          introduce generating functions of the underlying branching pro-
+                                                                              SF, λ = 2.3
+     0.4                                                                                           cesses, GA1(z) 5 G’A0 (z)=G’A0 (1).
+                                                                                                      Random removal of fraction, 1 2 p, of nodes will change the
+                                                                                                   degree distribution of the remaining nodes, so the generating func-
+     0.2                                                                                           tion of the new distribution is equal to the generating function of the
+                                                                                                   original distribution with argument 1 2 p(1 2 z) (ref. 24). We denote
+                                                                                                   the subsets of nodes remaining after the random removal of 1 2 p
+     0.0                                                                                           nodes as A0 , A and B0 , B, and note that there is one-to-one cor-
+              0.55      0.60         0.65      0.70         0.75       0.80      0.85       0.90
+                                                  p                                                respondence between nodes in A0 and nodes in B0, established by
+                                                                                                   A « B links. As the total number of nodes in network A is N, the
+Figure 3 | Numerical validation of theoretical results. a, Numerical                               number of nodes in A0 and B0 is N0 5 pN. The fraction of nodes that
+simulations of coupled Erdo0 s–Rényi networks with Ækæ 5 ÆkAæ 5 ÆkBæ and a
+finite number of nodes, N. The probability of existence of the giant mutually
+                                                                                                   belong to the giant component of network A0 is gA(p) 5 1 2
+connected component, P‘, is shown as function of p for different values of N.                      GA0[1 2 p(1 2 fA)] (refs 25, 26), where fA is a function of p that
+As N R ‘, the curves converge to a step function. The theoretical prediction                       satisfies the transcendental equation fA 5 GA1[1 2 p(1 2 fA)].
+of pc is shown by the arrow. b, Simulation results for P‘ as a function of p for                   Analogous equations exist for network B.
+coupled scale-free (SF) networks with l 5 3, 2.7, 2.3, coupled Erdo0 s–Rényi                         Using the generating function approach, we find that the fraction,
+(ER) networks and coupled random regular (RR) networks, all with an                                mn, of the nodes in the giant component after stage n in the cascade of
+average degree of Ækæ 5 4 and N 5 50,000. The simulation results agree with                        failures obeys a simple recursion relation (Supplementary
+our analytical results. We note that the broader the distribution, the higher                      Information). We find good agreement between simulations and
+the value of pc.                                                                                   theory (Supplementary Fig. 1).
+                                                                                                      To determine the final size of the giant mutually connected com-
+described above. After each stage, n, in the cascade of failures, we                               ponent, we recall that the fraction of nodes in the giant mutually
+determine the fraction of nodes, mn, in the largest an- or bn-cluster. At                          connected component, m‘, is the limit of the sequence mn as n R ‘.
+the end of the process, mn converges to m‘, the probability that a                                 This limit must satisfy the equations m2m11 5 m2m 5 m2m21 because
+randomly chosen node belongs to the mutually connected largest                                     the cluster is not further fragmented. This condition leads to the
+cluster. As N R ‘, the probability m‘ converges to a well defined                                  following system of two unknowns, x and y (Supplementary
+function, m‘(p), which has a single step discontinuity at the threshold                            Information), where m‘ 5 xgB(x) 5 ygA(y):
+p 5 pc, where it changes from zero for p , pc to m‘(pc) . 0 for p 5 pc                                                           
+                                                                                                                                   x~gA (y)p
+(Supplementary Information). This behaviour is characteristic of a                                                                                                     ð1Þ
+first-order phase transition, quite different from a second-order                                                                  y~gB (x)p
+phase transition such as that characterizing percolation of a single                               The system of equations (1) has one trivial solution, x 5 0 and y 5 0,
+network, where m‘(p) is a continuous function at p 5 pc. For a finite                              for any p value, corresponding to the giant mutually connected com-
+N and p close to pc, the giant mutually connected component exists in                              ponent being of zero size. If p is large enough, there also exists a
+a particular network realization with probability P‘(p, N). As N R ‘,                              solution such that the giant mutually connected component is of
+P‘(p, N) converges to a Heaviside step function, H(p 2 pc), which                                  non-zero size. We can easily exclude y from these equations and
+discontinuously changes value from zero for p , pc to one for p . pc                               obtain a single equation
+(Fig. 3a). Our simulation results for the value of pc (Fig. 3a) agree
+with the analytical results presented below.                                                                                   x~gA ½gB (x)pp                           ð2Þ
+   For two interdependent scale-free networks2 with power-law                                      which can be solved graphically (Supplementary Fig. 2) as the inter-
+degree distributions, PA(k) 5 PB(k) / k2l, we find that the existence                              section of the straight line y 5 x and the curve y 5 gA[gB(x)p]p. When p
+criteria for the giant component are quite different from those in a                               is small enough, the curve increases very slowly and does not intersect
+single network. For a single scale-free network with l ( 3, a giant                                the straight line (except at the origin, which intersection corresponds to
+                                                                                                                                                                        1027
+                                                                 ©2010 Macmillan Publishers Limited. All rights reserved
+LETTERS                                                                                                                                       NATURE | Vol 464 | 15 April 2010
+
+
+
+the trivial solution). A nontrivial solution first emerges in the critical                 4.  Pastor-Satorras, R. & Vespignani, A. Evolution and Structure of the Internet: A
+                                                                                               Statistical Physics Approach (Cambridge Univ. Press, 2006).
+case (p 5 pc), in which the line touches the curve at a single point,                      5. Dorogovtsev, S. N. & Mendes, J. F. F. Evolution of Networks: From Biological Nets to
+x 5 xc, where they have equal derivatives. Therefore, we have the                              the Internet and WWW (Oxford Univ. Press, 2003).
+condition                                                                                  6. Barrat, A., Barthelemy, M. & Vespignani, A. Dynamical Processes on Complex
+                                                                                              Networks (Cambridge Univ. Press, 2009).
+                        2 dgA           dgB                                              7. Cohen, R. & Erez, K. ben-Avraham, D. & Havlin, S. Resilience of the Internet to
+                   1~p        ½pgB (x)    (x)                       ð3Þ                      random breakdown. Phys. Rev. Lett. 85, 4626–4628 (2000).
+                          dx            dx      x~xc , p~pc
+                                                                                           8. Newman, M. E. J., Barabsi, A.-L. & Watts, D. J. (eds) The Structure and Dynamics of
+which, together with equation (2), yields the solution for pc and the                          Networks (Princeton Univ. Press, 2006).
+critical size of the giant mutually connected component,                                   9. Newman, M. E. J. The structure and function of complex networks. Phys. Rev. E 64,
+                                                                                               026118 (2001).
+m‘(pc) 5 xcgB(xc).                                                                         10. Goh, K. I., Kahng, B. & Kim, D. Universal behavior of load distribution in scale-free
+   In the case of two Erdo0 s–Rényi networks21–23, the problem can be                         networks. Phys. Rev. Lett. 87, 278701 (2001).
+solved explicitly. Then, GA1(x) 5 GA0 5 exp[ÆkAæ(x 2 1)], GB1 5                            11. Callaway, D. S., Newman, M. E. J., Strogatz, S. H. & Watts, D. J. Network
+GB0 5 exp[ÆkBæ(x 2 1)] and the system of transcendental equations                              robustness and fragility: percolation on random graphs. Phys. Rev. Lett. 85,
+                                                                                               5468–5471 (2000).
+(2) and (3) for the critical value of p 5 pc can be expressed in terms of                  12. Song, C. et al. Self-similarity of complex networks. Nature 433, 392–395 (2005).
+elementary functions (Supplementary Information). In the simple                            13. Motter, A. E. & Lai, Y. C. Cascade-based attacks on complex networks. Phys. Rev. E
+case with ÆkAæ 5 ÆkBæ 5 Ækæ, the critical parameters can be expressed in                       66, 065102(R) (2002).
+terms of the nontrivial root f 5 fA 5 fB 5 0.28467 of the equation                         14. Boccaletti, S. et al. Complex networks: structure and dynamics. Phys. Rep. 424,
+                                                                                               175–308 (2004).
+f 5 exp[(f 2 1)/2f]. We find that pc 5 [2Ækæf(1 2 f)]21 5 2.4554/Ækæ                       15. Peerenboom, J., Fischer, R. & Whitfield, R. Recovering from disruptions of
+and that m‘(pc) 5 (1 2 f)/(2Ækæf) 5 1.2564/Ækæ. Our simulations of                             interdependent critical infrastructures, in Proc. CRIS/DRM/IIIT/NSF Workshop
+Erdo0 s–Rényi networks agree with our theory (Fig. 3a).                                       Mitigat. Vulnerab. Crit. Infrastruct. Catastr. Failures (2001).
+   We also find that the known result for a single scale-free network,                     16. Rinaldi, S., Peerenboom, J. & Kelly, T. Identifying, understanding, and
+                                                                                               analyzing critical infrastructure interdependencies. IEEE Contr. Syst. Mag. 21, 11–25
+namely that pc R 0 as N R ‘ for l # 3, is not valid for two scale-free                         (2001).
+interdependent networks, where instead pc is finite for any l . 2.                         17. Laprie, J. C., Kanoun, K. & Kaniche, M. Modeling interdependencies between the
+Analysis of the behaviour of the generating functions as z R 1 shows                           electricity and information infrastructures. SAFECOMP-2007 4680, 54–67
+that as x R 0 the right-hand side of equation (2) can be approximated                          (2007).
+                                                                                           18. Kurant, M. & Thiran, P. Layered complex networks. Phys. Rev. Lett. 96, 138701
+by a power law, Cxg (see Supplementary Information for a detailed                              (2006).
+derivation), where C is constant and                                                       19. Panzieri, S. & Setola, R. Failures propagation in critical interdependent
+                                                                                               infrastructures. Int. J. Model. Ident. Contr. 3, 69–78 (2008).
+                             g~1=(3{lA )(3{lB )                                            20. Rosato, V. et al. Modelling interdependent infrastructures using interacting
+                                                                                               dynamical models. Int. J. Crit. Infrastruct. 4, 63–79 (2008).
+For 2 , lA , 3 and 2 , lB , 3, g . 1. Thus, the curve y 5                                  21. Erdo0 s, P. & Rényi, A. On random graphs I. Publ. Math. 6, 290–297 (1959).
+gA[gB(x)p]p always passes below y 5 x as x R 0 and for sufficiently                        22. Erdo0 s, P. & Rényi, A. The evolution of random graphs. Publ. Math. Inst. Hung. Acad.
+small values of p we do not have a non-trivial solution (Supplemen-                            Sci. 5, 17–61 (1960).
+tary Fig. 2), which means that the giant mutually connected com-                           23. Bollobás, B. Random Graphs (Academic, 1985).
+ponent is absent. Hence, we have a percolation phase transition at                         24. Newman, M. E. J. Spread of epidemic disease on networks. Phys. Rev. E 66, 016128
+                                                                                               (2002).
+some finite p 5 pc . 0 (Fig. 3b).                                                          25. Shao, J. et al. Fractal boundaries of complex networks. Europhys. Lett. 84, 48004
+   The model presented here captures the important phenomenon of                               (2008).
+a cascade of failures in interdependent networks that results in the                       26. Shao, J., Buldyrev, S. V., Braunstein, L. A., Havlin, S. & Stanley, H. E. Structure of
+first-order percolation phase transition. The model can be general-                            shells in complex networks. Phys. Rev. E 80, 036105 (2009).
+ized to the case of three or more interdependent networks, to the case                     Supplementary Information is linked to the online version of the paper at
+in which the A « B links connecting the networks are unidirectional                        www.nature.com/nature.
+rather than bidirectional, and to the case in which a node from                            Acknowledgements We thank R. Burk for discussions that led the authors to focus
+network A can depend on more than one node from network B.                                 on the interesting new scientific principles governing the catastrophic collapse of
+All these generalizations can be treated analytically by using generat-                    coupled networks. We also thank V. Rosato for providing the Italy 2003 blackout
+                                                                                           data. S.V.B. thanks the Office of Academic Affairs of Yeshiva University for funding
+ing functions, provided the networks are randomly connected and                            the Yeshiva University high-performance computer cluster and acknowledges the
+uncorrelated.                                                                              partial support of this research through the Dr. Bernard W. Gamson Computational
+Note added in proof: After this work was completed, we learned of the                      Science Center at Yeshiva College. S.V.B., G.P. and H.E.S. thank the Office of Naval
+independent work of E. Leicht and R. de Souza, also addressing the                         Research for support. S.H. thanks the European EPIWORK project and the Israel
+                                                                                           Science Foundation for financial support. We thank E. Leicht and R. de Souza for
+challenges of interacting networks.                                                        discussing their unpublished work with us.
+Received 22 December 2009; accepted 17 February 2010.                                      Author Contributions S.V.B., R.P., G.P., H.E.S. and S.H. all participated equally in the
+                                                                                           conceptual design of the model, the theoretical analysis, the computer simulations
+1.   Watts, D. J. & Strogatz, S. H. Collective dynamics of ‘small-world’ networks.
+                                                                                           and the writing of the paper.
+     Nature 393, 440–442 (1998).
+2.   Barabási, A.-L. & Albert, R. Emergence of scaling in random networks. Science 286,   Author Information Reprints and permissions information is available at
+     509–512 (1999).                                                                       www.nature.com/reprints. The authors declare no competing financial interests.
+3.   Albert, R. & Barabási, A.-L. Statistical mechanics of complex networks. Rev. Mod.    Correspondence and requests for materials should be addressed to S.V.B.
+     Phys. 74, 47–97 (2002).                                                               (buldyrev@yu.edu).
+
+
+
+
+1028
+                                                        ©2010 Macmillan Publishers Limited. All rights reserved
+

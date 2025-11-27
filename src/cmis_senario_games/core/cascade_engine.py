@@ -88,7 +88,11 @@ def keep_largest_component(num_nodes: int, edges: np.ndarray, alive_mask: np.nda
     return new_alive
 
 
-def run_cascade(system: InterdependentSystem, initial_alive_mask: np.ndarray) -> CascadeResult:
+def run_cascade(
+    system: InterdependentSystem,
+    initial_alive_mask: np.ndarray,
+    record_node_history: bool = False,
+) -> CascadeResult:
     """
     Run cascading failures on an interdependent two-layer system following
     the Buldyrev et al. (2010) algorithm (exact variant).
@@ -100,6 +104,10 @@ def run_cascade(system: InterdependentSystem, initial_alive_mask: np.ndarray) ->
     initial_alive_mask : np.ndarray
         Boolean mask of shape (N,) indicating nodes that survive the initial
         percolation (after protection, if any).
+    record_node_history : bool, optional
+        If True, record the full MCGC node mask at each cascade step in
+        history["mcgc_mask"]. This is useful for per-node timeline
+        visualizations but can be memory intensive for large systems.
     """
     network = system.network
     dependency = system.dependency
@@ -129,6 +137,8 @@ def run_cascade(system: InterdependentSystem, initial_alive_mask: np.ndarray) ->
     alive_B = alive0.copy()
 
     history: Dict[str, Any] = {"alive_A": [], "alive_B": [], "mcgc": []}
+    if record_node_history:
+        history["mcgc_mask"] = []
 
     while True:
         prev_A = alive_A.copy()
@@ -158,6 +168,8 @@ def run_cascade(system: InterdependentSystem, initial_alive_mask: np.ndarray) ->
         history["alive_A"].append(int(alive_A.sum()))
         history["alive_B"].append(int(alive_B.sum()))
         history["mcgc"].append(int(current_mcgc_mask.sum()))
+        if record_node_history:
+            history["mcgc_mask"].append(current_mcgc_mask.copy())
 
         # Convergence check
         if np.array_equal(alive_A, prev_A) and np.array_equal(alive_B, prev_B):
@@ -167,4 +179,3 @@ def run_cascade(system: InterdependentSystem, initial_alive_mask: np.ndarray) ->
     m_infty = float(final_alive_mask.sum()) / float(num_nodes) if num_nodes > 0 else 0.0
 
     return CascadeResult(final_alive_mask=final_alive_mask, m_infty=m_infty, history=history)
-

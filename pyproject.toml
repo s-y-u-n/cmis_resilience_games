@@ -27,6 +27,7 @@ testpaths = ["tests"]
 
 [tool.poetry.scripts]
 beta-eta-demo = "cmis_senario_games.cli.beta_eta_demo:main"
+buldyrev-visualize-defense = "cmis_senario_games.cli.buldyrev_plot_defense_example:main"
 
 [build-system]
 requires = ["poetry-core"]
