@@ -1,6 +1,0 @@
-scenario_config: "configs/buldyrev2010/er_default.yaml"
-experiment_name: "buldyrev2010_node_importance_shapley"
-analysis:
-  type: "node_importance_shapley"
-output_tag: "node_importance_shapley"
-
