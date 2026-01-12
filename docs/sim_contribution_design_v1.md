@@ -1,130 +1,161 @@
-# sim_contribution 設計書（v1.0）
+# sim_contribution design v1
 
-この文書は、`sim_contribution/` に含まれるシミュレーション実装の設計（責務分離・データフロー・入出力）をまとめたものです。
+このファイルは、チーム編成シミュレーション `sim_contribution` のアルゴリズム設計書（v1）です。
 
-## 目的（プロトコル）
+## 目的
 
-本シミュレーションの目的は、以下を**差し替え可能なモジュール構成**で再現することです。
+研究部署に所属する `n` 人（プレイヤー）を、各期 `t=1..T` にチームサイズ1–3で編成する。  
+編成アルゴリズムとして UD設計・DU設計・Random設計の3方式を用意し、以下を評価する。
 
-- Phase A（探索10試合）で観測テーブル（ログ）を作る
-- 観測テーブル上で経験的指標を算出する（未観測提携の補完はしない）
-- 戦略が最終1回の組分けを提案する（戦略入力は観測ログのみ）
-- Phase B（最終評価1回）を実行し、合計観測スコア `Σy` で比較する（参考でランク分布も出す）
+- A: 部署総成果（真の期待成果 `mu` に基づく）
+- B: Oracle regret（真の `mu` を知る最適編成との差）
+- C: 採用チーム成果 `mu(S)` の分布（低成果チームの多発／突出チームの発生をプロットで定性的評価）
 
-## 重要な設計上の制約
+観測は「その期に採用したチームの成果」のみを観測し、さらに個人（単体）成果は毎期全員分を観測する。  
+未観測の「S と単体の比較」は 0カウント（更新しない）。
 
-- 戦略への入力は `SeasonLog`（Phase A 観測ログ）**のみ**。真値パラメータは禁止。
-- `indices/` の経験的スコアは、後続研究の「貢献度指標」そのものではなく、**観測ログから計算可能な意思決定用スコア**。
-- 乱数は `numpy.random.Generator` を用い、`seed` により再現可能。
+## モデル定義
 
-## ディレクトリ構成（主要ファイル）
+### プレイヤー集合
 
-- `sim_contribution/src/sim_contribution/config.py`
-  - `Config`: 人数・分布・生成モデル係数・ランク閾値・スケジュール探索パラメータなどの集中管理
-- `sim_contribution/src/sim_contribution/players/`
-  - `param_generator.py`: 真値パラメータ生成（ability/cooper/skill/affinity）
-  - `types.py`: `PlayerParams`, `TrueParams`
-- `sim_contribution/src/sim_contribution/production/`
-  - `team_value.py`: 生成モデル `v(T)` と内訳（breakdown）計算
-  - `diversity.py`: 多様性 `D(T)=1-mean_cosine_similarity`
-  - `comm_cost.py`: `kappa * comb(|T|,2)` のコスト計算
-- `sim_contribution/src/sim_contribution/observation/`
-  - `noise.py`: 観測ノイズ `ε`
-  - `ranking.py`: Phase A の mean/std + 閾値で A〜E ランク付与（Phase Bも同基準）
-- `sim_contribution/src/sim_contribution/schedule/`
-  - `generator.py`: Phase A の固定探索スケジュール生成（10試合）
-  - `constraints.py`: スケジュールのペナルティ（ソフト制約）
-- `sim_contribution/src/sim_contribution/log/schema.py`
-  - `TeamLog`, `MatchLog`, `SeasonLog`: Phase A の観測テーブル（JSON/CSV出力の基礎）
-- `sim_contribution/src/sim_contribution/indices/`
-  - `empirical_interaction.py`: 観測済みチームの経験的相互作用スコア（shrinkage付き）
-  - `pair_profile.py`: ペアのランク分布ベクトル（A,B,C,D,E）
-- `sim_contribution/src/sim_contribution/strategies/`
-  - `random_partition.py`: ベースライン（サイズ1..3）
-  - `greedy_interaction.py`: 経験的相互作用スコアに基づく貪欲組分け
-  - `lexcel_weber_pairing.py`: Lexcel比較 + Weber式のペアリング（2人×5固定）
-- `sim_contribution/src/sim_contribution/evaluation/`
-  - `runner.py`: Phase A 実行 / Phase B 評価 / 戦略比較
-  - `reporting.py`: ログ・指標一覧（Phase A indices）・真値の保存
-- `sim_contribution/src/sim_contribution/viz/`
-  - `plots.py`: 出力図（PNG）
-- `sim_contribution/scripts/run_one_season.py`
-  - エントリポイント（1シーズンを実行して outputs を生成）
+- `N = {1,2,…,n}`
 
-## データモデル（ログ）
+### 候補提携集合（チーム候補）
 
-`SeasonLog` は Phase A の観測テーブルで、戦略入力の唯一のデータです。
+- `X = { S ⊆ N : 1 ≤ |S| ≤ 3 }`
 
-- `TeamLog`
-  - `members`: チーム構成（player_idのタプル）
-  - `v_true`: 真の `v(T)`（可視化・保存用）
-  - `y_obs`: 観測 `y=v+ε`
-  - `z`, `rank`: Phase A 統計での標準化・ランク
-  - `breakdown`: `v(T)` の内訳（base/diversity/affinity/cooperation/comm_cost）
-- `SeasonLog.phase_a_stats`
-  - `mean_y`, `std_y`, `thresholds`: Phase A で確定した標準化・閾値（Phase Bにも再利用）
+### 真の期待成果 mu(S)
 
-## 計算内容（モデル）
+#### 個人能力
 
-### 生成モデル v(T)
+- 各 `i∈N` に個人能力 `a_i` を与える。
 
-`production/team_value.py` が `v(T)` と内訳を返す。
+#### 2次相性（ペア相性）
 
-- base: `sum(a_i)`
-- diversity: `lambda_div * D(T)`
-- affinity: `sum_{i<j} h_ij`
-- cooperation: `lambda_coop * sum(c_i) * g(|T|)`
-- comm_cost: `-kappa*comb(|T|,2)`
+- 各 `i<j` に相性 `b_ij` を与える（正負あり）。
+- `b_ji=b_ij` とする。
 
-### 観測モデル y とランク
+#### 調整コスト cost(S)
 
-- `y = v(T) + Normal(0, sigma_noise)`
-- ランク: Phase A の mean/std で z-score → 閾値で A〜E
-- Phase B のランクも Phase A の mean/std/閾値を使う（比較一貫性）
+- 各 `i∈N` に協調性パラメータ `c_i`（[0,1]）を与える。
+- `cost({i}) = 0`
+- `cost(S)`（`|S|≥2`）：
 
-## 指標（観測ログベース）
+```
+cost(S) = Σ_{i<j, i,j∈S} max(0, 1 − (c_i + c_j)/2)
+```
 
-### 経験的相互作用（チーム）
+#### スキル補完性 comp(S)
 
-`indices/empirical_interaction.py`:
+- 各 `i∈N` にスキルベクトル `s_i ∈ R^d` を与える。
+- 正規化：`s_i := s_i / ||s_i||`（ゼロベクトル禁止）
+- `comp({i}) = 0`
+- `comp(S)`（`|S|≥2`）：
 
-- 観測された同一チーム `T` の `y_obs` 平均を `mean_y(T)`
-- 同サイズチームの `y_obs` 平均を `base(|T|)`
-- `raw = mean_y(T) - base(|T|)`
-- shrinkage: `w=n/(n+alpha)`, `score=w*raw`
+```
+comp(S) = (1 / C(|S|,2)) * Σ_{i<j, i,j∈S} (1 − cos(s_i, s_j))
+```
 
-注意: 理論的 Shapley Interaction Index の定義そのものではない（観測可能な代替）。
+（正規化済みなので `cos(u,v)=u·v`）
 
-### ペアプロフィール（ペア）
+#### 期待成果
 
-`indices/pair_profile.py`:
+- `mu({i}) = a_i`
+- `mu({i,j}) = a_i + a_j + b_ij + comp({i,j}) − cost({i,j})`
+- `mu({i,j,k}) = a_i + a_j + a_k + (b_ij + b_ik + b_jk) + comp({i,j,k}) − cost({i,j,k})`
 
-- ペア `(i,j)` が同一チームで観測されたときの `rank` をカウントし `(A,B,C,D,E)` を返す
+## 観測モデル
 
-## 戦略
+各期 `t` について、乱数ノイズ `ε_t(S)` を用意し、
 
-- `random_partition`: サイズ制約 1..3 を満たすランダム
-- `greedy_interaction`: 経験的相互作用スコア降順で、重複しないチームを貪欲採用し、残りを埋める
-- `lexcel_weber_pairing`: ペアの `(A,B,C,D,E)` を辞書式に比較し上位から重複なしで採用（2人×5固定）
+```
+y_t(S) = mu(S) + ε_t(S)
+```
 
-## 出力（成果物）
+観測ルール：
 
-`run_one_season.py` は `--outdir` に以下を出力する。
+- チーム成果：その期に採用されたチーム集合 `X_t` のみ `y_t(S)` を観測する（`S∈X_t`）。
+- 個人成果：全員について `y_t({i})` を観測する（`i∈N`）。
+- 未採用チーム `S∉X_t` の `y_t(S)` は観測しない。
 
-- Phase A: `phase_a_log.json`, `phase_a_teams.csv`
-- Phase A 指標一覧: `phase_a_indices.json`, `phase_a_indices.csv`
-  - 提携 |T|=1..3 の全組合せを対象
-  - 計算できない項目は `null`（個人にはペア指標などが定義できないため）
-- Phase B: `phase_b_results.json`, `phase_b_*.csv`
-- 真値（分析用）: `true_params.json`
-- 図: `players.png`, `phase_a_teams.png`, `phase_a_breakdown.png`, `phase_b_partitions.png`, `phase_b_summary.png`
+乱数は共通乱数（比較公平性）のため、`t`・`S` ごとに事前生成し固定する。
 
-## 交換可能性（差し替えポイント）
+## UD/DU 指標の定義と更新
 
-- 生成モデル: `production/team_value.py`
-- 探索スケジュール: `schedule/generator.py`（制約・目的関数を差し替え）
-- 観測・ランク: `observation/`
-- 指標: `indices/`
-- 戦略: `strategies/`
-- 評価・レポート: `evaluation/`
+全ての提携 `S∈X` について、累積カウンタを保持する：
 
+- `up[S]`（初期0）
+- `down[S]`（初期0）
+
+各期 `t`、採用チーム `S∈X_t` についてのみ更新する（未観測比較は0カウント）。
+
+更新規則：
+
+- `|S|=1` は更新しない（`up/down` は常に0）。
+- `|S|=2,3` のとき、各メンバー `k∈S` について個人成果 `y_t({k})` と比較し、
+  - `y_t(S) > y_t({k})` なら `up[S] += 1`
+  - `y_t({k}) > y_t(S)` なら `down[S] += 1`
+  - 等しい場合は更新しない
+
+## チーム編成アルゴリズム（共通形）
+
+各期 `t`、未割当集合 `R := N` とし、`R` が空になるまで以下を繰り返す：
+
+- `S ⊆ R` かつ `1 ≤ |S| ≤ 3` を選ぶ
+- 採用後 `R := R \\ S`
+- `X_t := X_t ∪ {S}`
+
+同順位の候補が複数ある場合は乱択（乱数シード固定）。
+
+## 3方式の仕様
+
+候補集合を `Cand(R) = { S ⊆ R : 1 ≤ |S| ≤ 3 }` とする。
+
+### UD設計
+
+- `key_UD(S) = ( up[S], −down[S] )` を辞書順最大化。
+
+### DU設計
+
+- `key_DU(S) = ( down[S], −up[S] )` を辞書順最小化。
+
+### Random設計
+
+- `Cand(R)` から一様ランダムに選択。
+
+## Oracle と Regret
+
+分割 `P`（互いに素、合併が `N`）について、
+
+```
+OracleValue = max_P Σ_{S∈P} mu(S)
+```
+
+を定義し、Regret は `OracleValue − Total_t` とする。
+
+OracleValue はビットマスクDPで計算する（`O(3*n^2*2^n)` 程度）。
+
+## シミュレーション手順（全体）
+
+前処理：
+
+1. 入力：`n, T, d, seed`
+2. `a_i, c_i, s_i(正規化), b_ij` を生成
+3. `X` を列挙し `mu/cost/comp` を計算
+4. `ε_t(S)` を `t=1..T, S∈X` について事前生成し固定
+5. `OracleValue` をDPで計算
+
+各方式（UD/DU/Random）を独立に実行：
+
+1. `up/down` を初期化
+2. 各期 `t`：
+   - 貪欲に分割 `X_t` を作る
+   - 観測：`S∈X_t` の `y_t(S)` と、全員の `y_t({i})`
+   - `up/down` 更新（採用チームのみ）
+   - `Total_t = Σ mu(S)`、`Regret_t = OracleValue − Total_t`、`TeamMuList_t` を記録
+
+## 出力
+
+- 指標A：`Total_t` 時系列
+- 指標B：`Regret_t` 時系列
+- 指標C：`mu(S)` の分布（全期サンプル）、min/median/max、分位点系列（例：10%, 25%）

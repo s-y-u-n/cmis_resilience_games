@@ -15,3 +15,14 @@ build/
 outputs/
 sim_contribution/outputs/
 **/outputs/
+.venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.mypy_cache/
+.pyright/
+dist/
+build/
+*.egg-info/
+outputs/
+.DS_Store
